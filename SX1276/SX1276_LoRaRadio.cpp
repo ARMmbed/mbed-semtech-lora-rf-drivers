@@ -213,6 +213,13 @@ SX1276_LoRaRadio::SX1276_LoRaRadio(PinName spi_mosi,
         is_murata = false;
     }
 
+    // Detect RFM95 based on pin configuration
+    if (pwr_amp_ctl == NC && txctl == NC && rxctl == NC && tcxo == NC && antswitch == NC && rf_switch_ctl1 == NC && rf_switch_ctl2 == NC) {
+        is_rfm95 = true;
+    } else {
+        is_rfm95 = false;
+    }
+
     if (tcxo != NC) {
         _tcxo = 1;
     }
@@ -259,7 +266,9 @@ void SX1276_LoRaRadio::init_radio(radio_events_t *events)
     // Reset the radio transceiver
     radio_reset();
 
-    if (!is_murata) {
+    if (is_rfm95) {
+        radio_variant = SX1276MB1LAS;
+    } else if (!is_murata) {
         // Setup radio variant type
         set_sx1276_variant_type();
     }

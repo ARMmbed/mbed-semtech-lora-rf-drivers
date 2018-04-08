@@ -393,6 +393,9 @@ private:
     // Murata board
     bool is_murata;
 
+    // RFM95 board
+    bool is_rfm95;
+
     // helper functions
     void setup_registers();
     void default_antenna_switch_ctrls();
