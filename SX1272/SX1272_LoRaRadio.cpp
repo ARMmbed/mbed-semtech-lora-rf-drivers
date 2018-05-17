@@ -23,10 +23,14 @@ Copyright (c) 2017, Arm Limited and affiliates.
 SPDX-License-Identifier: BSD-3-Clause
 */
 
+#include "platform/platform.h"
+#include "platform/mbed_wait_api.h"
+#include "platform/Callback.h"
+#include "Timer.h"
+
 #include <stdio.h>
 #include <math.h> //rint
 #include <string.h>
-#include "mbed.h"
 
 #include "SX1272_LoRaRadio.h"
 #include "sx1272Regs-Fsk.h"
@@ -47,7 +51,7 @@ SPDX-License-Identifier: BSD-3-Clause
 #define XTAL_FREQ                                   32000000
 #define FREQ_STEP                                   61.03515625
 
-
+using namespace mbed;
 
 enum RadioVariant {
     SX1272UNDEFINED = 0,

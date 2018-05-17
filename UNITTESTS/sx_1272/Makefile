@@ -1,0 +1,72 @@
+include ../makefile_defines.txt
+
+COMPONENT_NAME = lora_module_test
+
+#This must be changed manually
+SRC_FILES = \
+        ../../SX1272/SX1272_LoRaRadio.cpp
+
+TEST_SRC_FILES = \
+	main.cpp \
+        sx1272_test.cpp \
+        ../stubs/mbed_assert_stub.cpp \
+        ../stubs/EventQueue_stub.cpp \
+        ../stubs/equeue_stub.cpp \
+        ../stubs/InterruptIn_stub.cpp \
+        ../stubs/us_ticker_stub.cpp \
+        ../stubs/SPI_stub.cpp \
+        ../stubs/Ticker_stub.cpp \
+        ../stubs/TimerEvent_stub.cpp \
+        ../stubs/Timer_stub.cpp \
+        ../stubs/mbed_wait_api_stub.cpp \
+        ../stubs/mbed_gpio_stub.cpp \
+        ../stubs/DigitalInOut_stub.cpp \
+        ../stubs/gpio_api_stub.cpp \
+        ../stubs/mbed_critical_stub.cpp \
+        ../stubs/mbed_sleep_manager_stub.cpp \
+        ../stubs/Timeout_stub.cpp \
+
+include ../MakefileWorker.mk
+
+
+
+
+
+CPPUTESTFLAGS += -DFEA_TRACE_SUPPORT
+
+CPPUTESTFLAGS += -DMBED_CONF_APP_LORA_RADIO=SX1272
+CPPUTESTFLAGS += -DDEVICE_SPI
+CPPUTESTFLAGS += -DDEVICE_INTERRUPTIN
+
+CPPUTESTFLAGS += -DMBED_CONF_LORA_OVER_THE_AIR_ACTIVATION=true
+CPPUTESTFLAGS += -DMBED_CONF_LORA_TX_MAX_SIZE=256
+CPPUTESTFLAGS += -DMBED_CONF_LORA_PHY=EU868
+CPPUTESTFLAGS += -DMBED_CONF_LORA_NB_TRIALS=5
+
+#PIN mappings (not actually used in cpputest tests, can be any)
+CPPUTESTFLAGS += -DMBED_CONF_APP_LORA_SPI_MOSI=D11
+CPPUTESTFLAGS += -DMBED_CONF_APP_LORA_SPI_MISO=D12
+CPPUTESTFLAGS += -DMBED_CONF_APP_LORA_SPI_SCLK=D13
+CPPUTESTFLAGS += -DMBED_CONF_APP_LORA_CS=D10
+CPPUTESTFLAGS += -DMBED_CONF_APP_LORA_RESET=A0
+CPPUTESTFLAGS += -DMBED_CONF_APP_LORA_ANT_SWITCH=A4
+CPPUTESTFLAGS += -DMBED_CONF_APP_LORA_DIO0=D2
+CPPUTESTFLAGS += -DMBED_CONF_APP_LORA_DIO1=D3
+CPPUTESTFLAGS += -DMBED_CONF_APP_LORA_DIO2=D4
+CPPUTESTFLAGS += -DMBED_CONF_APP_LORA_DIO3=D5
+CPPUTESTFLAGS += -DMBED_CONF_APP_LORA_DIO4=D8
+CPPUTESTFLAGS += -DMBED_CONF_APP_LORA_DIO5=D9
+CPPUTESTFLAGS += -DMBED_CONF_APP_LORA_RF_SWITCH_CTL1=NC
+CPPUTESTFLAGS += -DMBED_CONF_APP_LORA_RF_SWITCH_CTL2=NC
+CPPUTESTFLAGS += -DMBED_CONF_APP_LORA_TXCTL=NC
+CPPUTESTFLAGS += -DMBED_CONF_APP_LORA_RXCTL=NC
+CPPUTESTFLAGS += -DMBED_CONF_APP_LORA_PWR_AMP_CTL=NC
+CPPUTESTFLAGS += -DMBED_CONF_APP_LORA_TCXO=NC
+
+CPPUTESTFLAGS += -DMBED_CONF_LORA_DUTY_CYCLE_ON=0
+CPPUTESTFLAGS += -DMBED_CONF_LORA_DEVICE_EUI="{ 0x6A, 0x54, 0x05, 0x45, 0xD6, 0xFF, 0xBD, 0xB0 }"
+CPPUTESTFLAGS += -DMBED_CONF_LORA_APPLICATION_EUI="{ 0xE3, 0xDB, 0x7F, 0x2D, 0x75, 0x9D, 0x1C, 0x91 }"
+CPPUTESTFLAGS += -DMBED_CONF_LORA_APPLICATION_KEY="{ 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 }"
+CPPUTESTFLAGS += -DMBED_CONF_LORA_PUBLIC_NETWORK=1
+CPPUTESTFLAGS += -DMBED_CONF_LORA_ADR_ON=1
+

@@ -1,0 +1,33 @@
+#--- Inputs ----#
+CPPUTEST_HOME = /usr
+CPPUTEST_USE_EXTENSIONS = Y
+CPPUTEST_USE_VPATH = Y
+CPPUTEST_USE_GCOV = Y
+CPPUTEST_USE_MEM_LEAK_DETECTION = N
+CPP_PLATFORM = gcc
+INCLUDE_DIRS =\
+  .\
+  ../stubs\
+  ../target_h\
+  ../../ \
+  ../../SX1272 \
+  ../../SX1272/registers \
+  ../../SX1276 \
+  ../../../mbed-os/features \
+  ../../../mbed-os/features/lorawan \
+  ../../../mbed-os/features/mbedtls/inc \
+  ../../../mbed-os/features/mbedtls \
+  ../../../mbed-os \
+  ../../../mbed-os/drivers \
+  ../../../mbed-os/platform \
+  ../../../mbed-os/rtos \
+  ../../../mbed-os/rtos/TARGET_CORTEX \
+  ../../../mbed-os/hal \
+  ../../../mbed-os/events \
+  ../../../mbed-os/events/equeue \
+  /usr/include\
+  $(CPPUTEST_HOME)/include\
+
+CPPUTESTFLAGS = -D__thumb2__ -w -D__INLINE=__inline
+CPPUTEST_CFLAGS += -std=gnu99
+
