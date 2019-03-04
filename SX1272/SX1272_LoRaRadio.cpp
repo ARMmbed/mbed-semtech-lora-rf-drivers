@@ -169,7 +169,8 @@ SX1272_LoRaRadio::SX1272_LoRaRadio(PinName spi_mosi,
                                    PinName rxctl,
                                    PinName antswitch,
                                    PinName pwr_amp_ctl,
-                                   PinName tcxo)
+                                   PinName tcxo,
+                                   int hz)
     :   _spi(spi_mosi, spi_miso, spi_sclk),
         _chip_select(nss, 1),
         _reset_ctl(reset),
@@ -197,6 +198,10 @@ SX1272_LoRaRadio::SX1272_LoRaRadio(PinName spi_mosi,
 
     if (tcxo != NC) {
         _tcxo = 1;
+    }
+
+    if (hz != 0) {
+        _spi.frequency(hz);
     }
 
     radio_is_active = false;

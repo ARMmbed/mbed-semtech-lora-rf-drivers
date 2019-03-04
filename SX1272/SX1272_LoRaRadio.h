@@ -80,7 +80,8 @@ public:
                      PinName rxctl = NC,
                      PinName ant_switch = NC,
                      PinName pwr_amp_ctl = NC,
-                     PinName tcxo = NC);
+                     PinName tcxo = NC,
+                     int hz = 0);
 
     /**
      * Destructor
