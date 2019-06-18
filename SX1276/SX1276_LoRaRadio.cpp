@@ -208,10 +208,8 @@ SX1276_LoRaRadio::SX1276_LoRaRadio(PinName spi_mosi,
     _dio5_pin = dio5;
 
     _radio_events = NULL;
-
-    if (tcxo != NC) {
-        _tcxo = 1;
-    }
+    _tcxo_wakeup_time = 0;
+    _tcxo_input_on = tcxo != NC;
 
 #ifdef MBED_CONF_RTOS_PRESENT
     irq_thread.start(mbed::callback(this, &SX1276_LoRaRadio::rf_irq_task));
@@ -287,11 +285,16 @@ void SX1276_LoRaRadio::init_radio(radio_events_t *events)
  */
 void SX1276_LoRaRadio::radio_reset()
 {
+    set_board_tcxo(true);
     _reset_ctl.output();
     _reset_ctl = 0;
     wait_ms(2);
     _reset_ctl.input();
     wait_ms(6);
+    if(_tcxo_input_on)
+    {
+        write_to_register(REG_LR_TCXO, read_register(REG_LR_TCXO) | RFLR_TCXO_TCXOINPUT_ON);
+    }
 }
 
 /**
@@ -829,6 +832,8 @@ void SX1276_LoRaRadio::sleep()
 
     // put module in sleep mode
     set_operation_mode(RF_OPMODE_SLEEP);
+
+    set_board_tcxo(false);
 }
 
 /**
@@ -1266,6 +1271,7 @@ void SX1276_LoRaRadio::set_operation_mode(uint8_t mode)
     if (mode == RF_OPMODE_SLEEP) {
         set_low_power_mode();
     } else {
+        set_board_tcxo(true);
         set_low_power_mode();
         set_antenna_switch(mode);
     }
@@ -1753,6 +1759,28 @@ void SX1276_LoRaRadio::set_antenna_switch(uint8_t mode)
             }
             break;
     }
+}
+
+void SX1276_LoRaRadio::set_board_tcxo(bool enable_tcxo)
+{
+    if(_rf_ctrls.tcxo != NC)
+    {
+        if(enable_tcxo)
+        {
+            _tcxo = 1;
+            if(_tcxo_wakeup_time > 0) wait_ms(_tcxo_wakeup_time);
+        }
+        else
+        {
+            _tcxo = 0;
+        }
+    }
+}
+
+void SX1276_LoRaRadio::set_board_tcxo_params(bool tcxo_input_on, uint32_t tcxo_wakeup_time)
+{
+    _tcxo_input_on = tcxo_input_on;
+    _tcxo_wakeup_time = tcxo_wakeup_time;
 }
 
 /*****************************************************************************

@@ -336,6 +336,14 @@ public:
      */
     virtual void unlock(void);
 
+    /**
+     *  Set board specific TCXO parameters. This must be called before the radio
+     *  object is used.
+     *
+     *  @param tcxo_input_on        Enable TcxoInputOn setting in radio (external TCXO connected)
+     *  @param tcxo_wakeup_time     Time to TCXO startup [ms]
+     */
+    void set_board_tcxo_params(bool tcxo_input_on, uint32_t tcxo_wakeup_time);
 private:
 
     // SPI and chip select control
@@ -401,6 +409,10 @@ private:
 
     uint8_t radio_variant;
 
+    // TCXO
+    uint32_t _tcxo_wakeup_time;
+    bool _tcxo_input_on;
+
     // helper functions
     void setup_registers();
     void default_antenna_switch_ctrls();
@@ -426,6 +438,7 @@ private:
     void rf_irq_task(void);
     void set_modem(uint8_t modem);
     void rx_chain_calibration(void);
+    void set_board_tcxo(bool enable_tcxo);
 
     // ISRs
     void  dio0_irq_isr();
