@@ -1271,6 +1271,12 @@ void SX1276_LoRaRadio::set_operation_mode(uint8_t mode)
     }
 
     write_to_register(REG_OPMODE, (read_register(REG_OPMODE) & RF_OPMODE_MASK) | mode);
+    // RX to SLEEP mode transition may not always work immediately.
+    // Check and retry until the write goes thru (fix from ArduinoCore-stm32l0).
+    while(mode == RF_OPMODE_SLEEP && (read_register(REG_OPMODE) & ~RF_OPMODE_MASK) != RF_OPMODE_SLEEP)
+    {
+        write_to_register(REG_OPMODE, (read_register(REG_OPMODE) & RF_OPMODE_MASK) | RF_OPMODE_SLEEP);
+    }
 }
 
 /**
