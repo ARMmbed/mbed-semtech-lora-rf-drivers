@@ -52,6 +52,7 @@ using namespace rtos;
  */
 #define XTAL_FREQ                                   32000000
 #define FREQ_STEP                                   6103515625
+#define FREQ_STEP_DECIMAL_POINTS                    100000000
 
 /*!
  * Constant values need to compute the RSSI value
@@ -318,7 +319,7 @@ uint8_t SX1276_LoRaRadio::get_status(void)
 void SX1276_LoRaRadio::set_channel(uint32_t freq)
 {
     _rf_settings.channel = freq;
-    freq = (uint32_t) ((uint64_t) (freq * 100000000) / (uint64_t) FREQ_STEP);
+    freq = (uint32_t) ((uint64_t) (freq * FREQ_STEP_DECIMAL_POINTS) / (uint64_t) FREQ_STEP);
     write_to_register(REG_FRFMSB, (uint8_t) ((freq >> 16) & 0xFF));
     write_to_register(REG_FRFMID, (uint8_t) ((freq >> 8) & 0xFF));
     write_to_register(REG_FRFLSB, (uint8_t) (freq & 0xFF));
@@ -562,7 +563,7 @@ void SX1276_LoRaRadio::set_tx_config(radio_modems_t modem, int8_t power,
             _rf_settings.fsk.iq_inverted = iq_inverted;
             _rf_settings.fsk.tx_timeout = timeout;
 
-            fdev = (uint16_t) ((uint64_t) (fdev * 100000000) / (uint64_t) FREQ_STEP);
+            fdev = (uint16_t) ((uint64_t) (fdev * FREQ_STEP_DECIMAL_POINTS) / (uint64_t) FREQ_STEP);
             write_to_register( REG_FDEVMSB, (uint8_t) (fdev >> 8));
             write_to_register( REG_FDEVLSB, (uint8_t) (fdev & 0xFF));
 
@@ -681,7 +682,7 @@ uint32_t SX1276_LoRaRadio::time_on_air(radio_modems_t modem, uint8_t pkt_len)
 
             break;
         case MODEM_LORA:
-            int bw = 0;
+            uint32_t bw = 0;
             // REMARK: When using LoRa modem only bandwidths 125, 250 and 500 kHz are supported
             switch (_rf_settings.lora.bandwidth) {
                 //case 0: // 7.8 kHz
@@ -1382,10 +1383,12 @@ void SX1276_LoRaRadio::rx_chain_calibration(void)
 
     // Save context
     regPaConfigInitVal = read_register( REG_PACONFIG );
-    initialFreq = (uint32_t) ((uint64_t) (((uint32_t) this->read_register(REG_FRFMSB) << 16) |
-                            ((uint32_t) this->read_register(REG_FRFMID) << 8 ) |
-                            ((uint32_t)this->read_register(REG_FRFLSB))) * (uint64_t) FREQ_STEP)
-                            / 100000000;
+    initialFreq = (uint32_t) (
+                  (uint64_t) ((((uint32_t) this->read_register(REG_FRFMSB) << 16) |
+                              ((uint32_t) this->read_register(REG_FRFMID) << 8 ) |
+                              ((uint32_t) this->read_register(REG_FRFLSB)))
+                  * (uint64_t) FREQ_STEP)
+                  / (uint64_t) FREQ_STEP_DECIMAL_POINTS);
 
     // Cut the PA just in case, RFO output, power = -1 dBm
     write_to_register(REG_PACONFIG, 0x00);
@@ -1868,11 +1871,10 @@ void SX1276_LoRaRadio::handle_dio0_irq()
                     _rf_settings.fsk_packet_handler.rssi_value =
                             -(read_register(REG_RSSIVALUE) >> 1);
 
-                    _rf_settings.fsk_packet_handler.afc_value =
-                            (int32_t) (uint64_t) ((((uint16_t) read_register(REG_AFCMSB) << 8)
-                                    | (uint16_t) read_register( REG_AFCLSB))
+                    _rf_settings.fsk_packet_handler.afc_value = (int32_t) (uint64_t) (
+                                    (((uint16_t) read_register(REG_AFCMSB) << 8) | (uint16_t) read_register(REG_AFCLSB))
                                     * (uint64_t) FREQ_STEP)
-                                    / 100000000;
+                                    / FREQ_STEP_DECIMAL_POINTS;
                     _rf_settings.fsk_packet_handler.rx_gain =
                                           (read_register( REG_LNA) >> 5) & 0x07;
 
