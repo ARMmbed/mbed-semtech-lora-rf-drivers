@@ -2,8 +2,8 @@
     "name": "SX126X-lora-driver",
     "config": {
         "spi-frequency": {
-        	"help": "SPI frequency, Default: 16 MHz",
-        	"value": 16000000
+        	"help": "SPI frequency, Default: 12 MHz",
+        	"value": 12000000
         },
         "buffer-size": {
         	"help": "Max. buffer size the radio can handle, Default: 255 B",
