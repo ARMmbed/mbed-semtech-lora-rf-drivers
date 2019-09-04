@@ -1871,10 +1871,10 @@ void SX1276_LoRaRadio::handle_dio0_irq()
                     _rf_settings.fsk_packet_handler.rssi_value =
                             -(read_register(REG_RSSIVALUE) >> 1);
 
-                    _rf_settings.fsk_packet_handler.afc_value = (int32_t) (uint64_t) (
+                    _rf_settings.fsk_packet_handler.afc_value = (int32_t) ((uint64_t) (
                                     (((uint16_t) read_register(REG_AFCMSB) << 8) | (uint16_t) read_register(REG_AFCLSB))
                                     * (uint64_t) FREQ_STEP)
-                                    / FREQ_STEP_DECIMAL_POINTS;
+                                    / FREQ_STEP_DECIMAL_POINTS);
                     _rf_settings.fsk_packet_handler.rx_gain =
                                           (read_register( REG_LNA) >> 5) & 0x07;
 
