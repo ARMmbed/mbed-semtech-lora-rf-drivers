@@ -678,7 +678,7 @@ uint32_t SX1276_LoRaRadio::time_on_air(radio_modems_t modem, uint8_t pkt_len)
                                             != 0x00) ? 1 : 0) + pkt_len
                                     + ((_rf_settings.fsk.crc_on == 0x01) ?
                                             2 : 0));
-            airTime = (tmp / _rf_settings.fsk.datarate) + (((tmp % _rf_settings.fsk.datarate) > 0) ? 1 : 0);
+            airTime = (tmp / _rf_settings.fsk.datarate) + ((((tmp * 10) / _rf_settings.fsk.datarate) % 10 > 5) ? 1 : 0);
 
             break;
         case MODEM_LORA:
