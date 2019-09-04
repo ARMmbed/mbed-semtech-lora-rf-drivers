@@ -718,18 +718,18 @@ uint32_t SX1276_LoRaRadio::time_on_air(radio_modems_t modem, uint8_t pkt_len)
             }
 
             // Symbol rate : time for one symbol (secs)
-            uint32_t tPreamble = (uint32_t) (((uint64_t) (((_rf_settings.lora.preamble_len * 1000) + 4250) * (1 << _rf_settings.lora.datarate))) / bw); // unit = ms
+            uint32_t tPreamble = (uint32_t) ((uint64_t) (((_rf_settings.lora.preamble_len * 1000) + 4250) * (1 << _rf_settings.lora.datarate)) / bw); // unit = ms
 
             // Symbol length of payload and time
-            int64_t tmp1 = 1000 * 8 * pkt_len - 4 * _rf_settings.lora.datarate + 28 + 16 * _rf_settings.lora.crc_on - (_rf_settings.lora.fix_len ? 20 : 0);
+            int64_t tmp1 = 1000 * (8 * pkt_len - 4 * _rf_settings.lora.datarate + 28 + 16 * _rf_settings.lora.crc_on - (_rf_settings.lora.fix_len ? 20 : 0));
             int64_t tmp2 = 4 * (_rf_settings.lora.datarate - ((_rf_settings.lora.low_datarate_optimize > 0) ? 2 : 0));
             int32_t tmp3 = (int32_t) ((tmp1 / tmp2) + (((tmp1 % tmp2) > 0) ? 1 : 0));
             int32_t tmp  = (_rf_settings.lora.coderate + 4) * tmp3;
 
-            uint32_t nPayload = 8 + ((tmp > 0) ? tmp : 0);
+            uint32_t nPayload = 1000 * 8 + ((tmp > 0) ? tmp : 0);
             uint32_t tPayload = (nPayload * (1 << _rf_settings.lora.datarate)) / bw; // unit = ms
             // Time on air
-            airTime = tPreamble + tPayload;
+            airTime = (tPreamble + tPayload) / 1000; // unit = s
 
             break;
     }
