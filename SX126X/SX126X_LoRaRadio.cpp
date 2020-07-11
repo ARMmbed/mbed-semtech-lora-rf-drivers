@@ -23,7 +23,7 @@ SPDX-License-Identifier: BSD-3-Clause
 */
 
 #include <math.h>
-#include "ThisThread.h"
+//#include "ThisThread.h"
 #include "mbed_wait_api.h"
 #include "Timer.h"
 #include "SX126X_LoRaRadio.h"
@@ -35,7 +35,7 @@ SPDX-License-Identifier: BSD-3-Clause
 #endif
 
 using namespace mbed;
-using namespace rtos;
+//using namespace rtos;
 
 #ifdef MBED_CONF_RTOS_PRESENT
 /**
@@ -203,7 +203,8 @@ bool SX126X_LoRaRadio::perform_carrier_sense(radio_modems_t modem,
     receive();
 
     // hold on a bit, radio turn-around time
-    ThisThread::sleep_for(1);
+    //ThisThread::sleep_for(1);
+    
 
     Timer elapsed_time;
     elapsed_time.start();
@@ -504,10 +505,10 @@ void SX126X_LoRaRadio::radio_reset()
     _reset_ctl.output();
     _reset_ctl = 0;
     // should be enough, required is 50-100 us
-    ThisThread::sleep_for(2);
+    //ThisThread::sleep_for(2);
     _reset_ctl.input();
     // give some time for automatic image calibration
-    ThisThread::sleep_for(6);
+    //ThisThread::sleep_for(6);
 }
 
 void SX126X_LoRaRadio::wakeup()
@@ -541,7 +542,7 @@ void SX126X_LoRaRadio::sleep(void)
 #endif
 
     write_opmode_command(RADIO_SET_SLEEP, &sleep_state, 1);
-    ThisThread::sleep_for(2);
+    //ThisThread::sleep_for(2);
 }
 
 uint32_t SX126X_LoRaRadio::random(void)
@@ -553,7 +554,7 @@ uint32_t SX126X_LoRaRadio::random(void)
     _reception_mode = RECEPTION_MODE_OTHER;
     _rx_timeout = 0xFFFFFFFF;
     receive();
-    ThisThread::sleep_for(1);
+    //ThisThread::sleep_for(1);
     read_register(RANDOM_NUMBER_GENERATORBASEADDR, buf, 4);
     standby();
 
