@@ -342,6 +342,7 @@ private:
     void set_device_ready(void);
     int8_t get_rssi();
     uint8_t get_fsk_bw_reg_val(uint32_t bandwidth);
+    void delay(uint ms);
     void write_to_register(uint16_t addr, uint8_t data);
     void write_to_register(uint16_t addr, uint8_t *data, uint8_t size);
     uint8_t read_register(uint16_t addr);
