@@ -26,7 +26,6 @@ SPDX-License-Identifier: BSD-3-Clause
 #include "platform/Callback.h"
 #include "platform/mbed_wait_api.h"
 #include "drivers/Timer.h"
-//#include "rtos/ThisThread.h"
 
 #include "SX1276_LoRaRadio.h"
 #include "sx1276Regs-Fsk.h"
@@ -34,7 +33,11 @@ SPDX-License-Identifier: BSD-3-Clause
 
 #include <math.h> //rint
 
-//using namespace rtos;
+#ifdef MBED_CONF_RTOS_PRESENT
+#include "rtos/ThisThread.h"
+using namespace rtos;
+#endif
+
 using namespace mbed;
 
 /*!
@@ -1182,14 +1185,6 @@ void SX1276_LoRaRadio::rf_irq_task(void)
 #endif
 
 /**
- * Writes a single byte to a given register
- */
-void SX1276_LoRaRadio::write_to_register(uint8_t addr, uint8_t data)
-{
-    write_to_register(addr, &data, 1);
-}
-
-/**
  * delay
  */
 void SX1276_LoRaRadio::delay(uint ms)
@@ -1199,6 +1194,14 @@ void SX1276_LoRaRadio::delay(uint ms)
 #else
     wait_ms(ms);
 #endif
+}
+
+/**
+ * Writes a single byte to a given register
+ */
+void SX1276_LoRaRadio::write_to_register(uint8_t addr, uint8_t data)
+{
+    write_to_register(addr, &data, 1);
 }
 
 /**
