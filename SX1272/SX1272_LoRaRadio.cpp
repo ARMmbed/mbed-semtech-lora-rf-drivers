@@ -27,15 +27,18 @@ SPDX-License-Identifier: BSD-3-Clause
 #include "sx1272Regs-Fsk.h"
 #include "sx1272Regs-LoRa.h"
 
-#include "rtos/ThisThread.h"
 #include "platform/Callback.h"
 #include "drivers/Timer.h"
 #include "platform/mbed_wait_api.h"
 
 #include <math.h> //rint
 
-using namespace mbed;
+#ifdef MBED_CONF_RTOS_PRESENT
+#include "rtos/ThisThread.h"
 using namespace rtos;
+#endif
+
+using namespace mbed;
 
 #ifdef MBED_CONF_SX1272_LORA_DRIVER_SPI_FREQUENCY
 #define SPI_FREQUENCY    MBED_CONF_SX1272_LORA_DRIVER_SPI_FREQUENCY
@@ -384,9 +387,9 @@ void SX1272_LoRaRadio::radio_reset()
 {
     _reset_ctl.output();
     _reset_ctl = 0;
-    ThisThread::sleep_for(2);
+    delay(2);
     _reset_ctl.input();
-    ThisThread::sleep_for(6);
+    delay(6);
 }
 
 /**
@@ -721,7 +724,7 @@ void SX1272_LoRaRadio::send(uint8_t *buffer, uint8_t size)
             // FIFO operations can not take place in Sleep mode
             if ((read_register(REG_OPMODE) & ~RF_OPMODE_MASK) == RF_OPMODE_SLEEP) {
                 standby();
-                ThisThread::sleep_for(1);
+                delay(1);
             }
 
             if (_rf_settings.fsk.fix_len == false) {
@@ -771,7 +774,7 @@ void SX1272_LoRaRadio::send(uint8_t *buffer, uint8_t size)
             // FIFO operations can not take place in Sleep mode
             if ((read_register(REG_OPMODE) & ~RF_OPMODE_MASK) == RF_OPMODE_SLEEP) {
                 standby();
-                ThisThread::sleep_for(1);
+                delay(1);
             }
             // write payload buffer
             write_fifo(buffer, size);
@@ -1044,7 +1047,7 @@ bool SX1272_LoRaRadio::perform_carrier_sense(radio_modems_t modem,
     set_operation_mode(RF_OPMODE_RECEIVER);
 
     // hold on a bit, radio turn-around time
-    ThisThread::sleep_for(1);
+    delay(1);
 
     Timer elapsed_time;
     elapsed_time.start();
@@ -1162,7 +1165,7 @@ uint32_t SX1272_LoRaRadio::random()
     set_operation_mode(RF_OPMODE_RECEIVER);
 
     for (i = 0; i < 32; i++) {
-        ThisThread::sleep_for(1);
+        delay(1);
         // Unfiltered RSSI value reading. Only takes the LSB value
         rnd |= ((uint32_t) read_register(REG_LR_RSSIWIDEBAND) & 0x01) << i;
     }
@@ -1211,6 +1214,18 @@ void SX1272_LoRaRadio::rf_irq_task(void)
     }
 }
 #endif
+
+/**
+ * delay
+ */
+void SX1272_LoRaRadio::delay(uint ms)
+{
+#ifdef MBED_CONF_RTOS_PRESENT
+    ThisThread::sleep_for(ms);
+#else
+    wait_ms(ms);
+#endif
+}
 
 /**
  * Writes a single byte to a given register
@@ -1452,14 +1467,14 @@ void SX1272_LoRaRadio::set_sx1272_variant_type()
 {
     if (_rf_ctrls.ant_switch != NC) {
         _ant_switch.input();
-        ThisThread::sleep_for(1);
+        delay(1);
         if (_ant_switch == 1) {
             radio_variant = SX1272MB1DCS;
         } else {
             radio_variant = SX1272MB2XAS;
         }
         _ant_switch.output();
-        ThisThread::sleep_for(1);
+        delay(1);
     } else {
         radio_variant = MBED_CONF_SX1272_LORA_DRIVER_RADIO_VARIANT;
     }
